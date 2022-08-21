@@ -7,7 +7,6 @@ import { useState } from "react";
 import Address from "./Address/Address";
 import { SelectOutlined } from "@ant-design/icons";
 import { getExplorer } from "helpers/networks";
-
 import {
   initContract,
   signInWithNearWallet,
@@ -33,18 +32,12 @@ const styles = {
   },
 };
 
-function Account() {
-  const { authenticate, isAuthenticated, logout } = useMoralis();
+function Account(props) {
+  const { authenticate, logout } = useMoralis();
   const { walletAddress, chainId } = useMoralisDapp();
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  window.nearInitPromise = initContract()
-  .then(() => {
-    
-  })
-  .catch(alert)
   
-  if (!isAuthenticated) {
+  if (!props.authenticated) {
     return (
       <div
         style={styles.account}
@@ -59,7 +52,7 @@ function Account() {
     <>
       <div style={styles.account} onClick={() => setIsModalVisible(true)}>
         <p style={{ marginRight: "5px", ...styles.text }}>
-          {getEllipsisTxt(walletAddress, 6)}
+          {props.accountId}
         </p>
         <Blockie currentWallet scale={3} />
       </div>
@@ -85,13 +78,14 @@ function Account() {
         >
           <Address
             avatar="left"
-            size={6}
+            size={0}
             copyable
             style={{ fontSize: "20px" }}
+            address={props.accountId}
           />
           <div style={{ marginTop: "10px", padding: "0 10px" }}>
             <a
-              href={`${getExplorer(chainId)}/address/${walletAddress}`}
+              href={`https://explorer.testnet.near.org/accounts/${props.accountId}`}
               target="_blank"
               rel="noreferrer"
             >
@@ -111,7 +105,7 @@ function Account() {
             fontWeight: "500",
           }}
           onClick={() => {
-            logout();
+            signOutNearWallet();
             setIsModalVisible(false);
           }}
         >

@@ -18,6 +18,14 @@ import NativeBalance from "components/NativeBalance";
 import "./style.css";
 import Text from "antd/lib/typography/Text";
 import NFTMarketTransactions from "components/NFTMarketTransactions";
+import {
+  initContract,
+  signInWithNearWallet,
+  signOutNearWallet,
+  setGreetingOnContract,
+  getGreetingFromContract,
+} from './near-api'
+
 const { Header, Footer } = Layout;
 
 const styles = {
@@ -58,6 +66,19 @@ const App = ({ isServerInfo }) => {
 
   const [inputValue, setInputValue] = useState("explore");
 
+  const [authenticated, setAuthenticated] = useState();
+  const [accountId, setAccountId] = useState();
+
+  window.nearInitPromise = initContract()
+  .then(() => {
+      if (window && window.walletConnection) {
+        console.log(window.walletConnection.isSignedIn())
+        setAuthenticated(window.walletConnection.isSignedIn())
+        setAccountId(window.accountId)
+      }
+  })
+  .catch(alert)
+
   useEffect(() => {
     if (isAuthenticated && !isWeb3Enabled && !isWeb3EnableLoading) enableWeb3();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,7 +100,7 @@ const App = ({ isServerInfo }) => {
               marginLeft: "50px",
               width: "100%",
             }}
-            defaultSelectedKeys={["nftMarket"]}
+            // defaultSelectedKeys={["nftMarket"]}
           >
             <Menu.Item key="nftMarket" onClick={() => setInputValue("explore")} >
               <NavLink to="/NFTMarketPlace">🛒 Explore Market</NavLink>
@@ -94,7 +115,7 @@ const App = ({ isServerInfo }) => {
           <div style={styles.headerRight}>
             {/* <Chains /> */}
             <NativeBalance />
-            <Account />
+            <Account authenticated={authenticated} accountId={accountId}/>
           </div>
         </Header>
         <div style={styles.content}>
@@ -109,7 +130,7 @@ const App = ({ isServerInfo }) => {
               <NFTMarketTransactions />
             </Route>
           </Switch>
-          <Redirect to="/NFTMarketPlace" />
+          {/* <Redirect to="/NFTMarketPlace" /> */}
         </div>
       </Router>
       <Footer style={{ textAlign: "center" }}>
