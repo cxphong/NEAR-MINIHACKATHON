@@ -20,10 +20,7 @@ import Text from "antd/lib/typography/Text";
 import NFTMarketTransactions from "components/NFTMarketTransactions";
 import {
   initContract,
-  signInWithNearWallet,
-  signOutNearWallet,
-  setGreetingOnContract,
-  getGreetingFromContract,
+  getAccountBalance
 } from './near-api'
 
 const { Header, Footer } = Layout;

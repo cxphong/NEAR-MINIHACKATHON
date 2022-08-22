@@ -13,8 +13,6 @@ export async function initContract() {
   // is hosted at https://wallet.testnet.near.org
   window.walletConnection = new WalletConnection(near)
 
-  console.log(window.walletConnection)
-
   // Getting the Account ID. If still unauthorized, it's just empty string
   window.accountId = window.walletConnection.getAccountId()
 
@@ -51,4 +49,14 @@ export async function setGreetingOnContract(message){
 export async function getGreetingFromContract(){
   let greeting = await window.contract.get_greeting()
   return greeting
+}
+
+export async function getAccountBalance() {
+  const near = await connect(Object.assign({ deps: { keyStore: new keyStores.BrowserLocalStorageKeyStore() } }, nearConfig))
+  window.walletConnection = new WalletConnection(near)
+  if (window.walletConnection.getAccountId()) {
+    window.account = await near.account(window.walletConnection.getAccountId());
+    let balance = await window.account.getAccountBalance()
+    return (balance.available/Math.pow(10, 24)).toFixed(2)
+  }
 }
