@@ -1,5 +1,7 @@
 import { connect, Contract, keyStores, WalletConnection } from 'near-api-js'
 import getConfig from './near-config'
+import { v4 as uuidv4 } from 'uuid';
+import BN from 'bn.js';
 
 // const nearConfig = getConfig(process.env.NODE_ENV || 'development')
 const nearConfig = getConfig('development')
@@ -21,7 +23,7 @@ export async function initContract() {
     // // View methods are read only. They don't modify the state, but usually return some value.
     // viewMethods: ['get_greeting'],
     // // Change methods can modify the state. But you don't receive the returned value when called.
-    // changeMethods: ['set_greeting'],
+    changeMethods: ['nft_mint'],
   })
 }
 
@@ -39,7 +41,18 @@ export function signInWithNearWallet() {
   window.walletConnection.requestSignIn(nearConfig.contractName)
 }
 
+export async function mintNFT(metadata) {
+  let response = await window.contract.nft_mint({
+      token_id: uuidv4(),
+      receiver_id: window.accountId,
+      metadata: metadata
+  },  10000000000000, new BN('7260000000000000000000'))
+
+  return response
+}
+
 export async function setGreetingOnContract(message){
+  
   let response = await window.contract.set_greeting({
     args:{message: message}
   })
